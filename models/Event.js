@@ -4,13 +4,11 @@ const EventSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    trim: true,
     maxlength: 50,
   },
   description: {
     type: String,
     required: true,
-    trim: true,
     maxlength: 500,
   },
   // price: {
@@ -22,13 +20,11 @@ const EventSchema = new mongoose.Schema({
   start: {
     type: Date,
     required: true,
-    trim: true,
     maxlength: 50,
   },
   end: {
     type: Date,
     required: true,
-    trim: true,
     maxlength: 50,
   },
   creator: {

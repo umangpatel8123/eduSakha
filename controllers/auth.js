@@ -9,7 +9,7 @@ const router = express.Router();
 
 export const proffSignup = async (req, res) => {
   const {name, proffId, proffEmail, proffPassword, proffPhone} = req.body;
-  console.log(name, proffId, proffEmail, proffPassword, proffPhone);
+  // console.log(name, proffId, proffEmail, proffPassword, proffPhone);
 
   try {
     if (
@@ -71,6 +71,7 @@ export const proffSignup = async (req, res) => {
 
 export const proffLogin = async (req, res) => {
   const {proffEmail, proffPassword} = req.body;
+  // console.log(proffEmail, proffPassword);
   try {
     if (proffEmail === undefined || proffPassword === undefined) {
       return res
@@ -89,27 +90,26 @@ export const proffLogin = async (req, res) => {
       return res.status(400).json({success: false, msg: 'Invalid credentials'});
     }
     const token = jwt.sign(
-      {email: proff.proffEmail, id: proff._id, role: 'professor'},
+      {email: proffEmail, id: proff._id, role: 'professor'},
       'test'
     );
     return res.status(200).json({success: true, result: proff, token});
   } catch (error) {
-    return res
-      .status(400)
-      .json({success: false, msg: 'Please fill all the fields'});
+    return res.status(400).json({success: false, msg: 'internal server error'});
   }
 };
 
 export const studentSignup = async (req, res) => {
   const {name, studentId, studentEmail, studentPassword, studentPhone} =
     req.body;
+  // console.log(name, studentId, studentEmail, studentPassword, studentPhone);
   try {
     if (
+      name === undefined ||
+      studentId === undefined ||
       studentEmail === undefined ||
       studentPassword === undefined ||
-      studentId === undefined ||
-      studentPhone === undefined ||
-      name === undefined
+      studentPhone === undefined
     ) {
       return res
         .status(400)
@@ -123,7 +123,7 @@ export const studentSignup = async (req, res) => {
         msg: 'Invalid email address',
       });
     }
-    //password validation
+    //   //password validation
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!studentPassword || !passwordRegex.test(studentPassword)) {
@@ -145,26 +145,26 @@ export const studentSignup = async (req, res) => {
     });
     student.save();
     const token = jwt.sign(
-      {email: stud.studentEmail, id: stud._id, role: 'student'},
+      {email: studentEmail, id: student._id, role: 'student'},
       'test'
     );
-    return res.status(200).json({success: true, result: student, token: token});
+    res.status(200).json({success: true, data: student, token: token});
   } catch (error) {
-    return res
-      .status(400)
-      .json({success: false, msg: 'Please fill all the fields'});
+    console.log(error);
+    return res.status(400).json({success: false, msg: 'internal server error'});
   }
 };
 
 export const studentLogin = async (req, res) => {
   const {studentEmail, studentPassword} = req.body;
+  // console.log(studentEmail, studentPassword);
   try {
     if (studentEmail === undefined || studentPassword === undefined) {
       return res
         .status(400)
         .json({success: false, msg: 'Please fill all the fields'});
     }
-    const stud = StudentSchema.findOne({studentEmail});
+    const stud = await StudentSchema.findOne({studentEmail});
     if (!stud) {
       return res.status(400).json({success: false, msg: 'User does not exist'});
     }
@@ -176,14 +176,13 @@ export const studentLogin = async (req, res) => {
       return res.status(400).json({success: false, msg: 'Invalid credentials'});
     }
     const token = jwt.sign(
-      {email: stud.studentEmail, id: stud._id, role: 'student'},
+      {email: studentEmail, id: stud._id, role: 'student'},
       'test'
     );
     return res.status(200).json({success: true, result: stud, token});
   } catch (error) {
-    return res
-      .status(400)
-      .json({success: false, msg: 'Please fill all the fields'});
+    console.log(error);
+    return res.status(400).json({success: false, msg: 'internal server error'});
   }
 };
 
